@@ -32,7 +32,7 @@ http {
     # Only retry if there was a communication error, not a timeout
     # on the Tornado server (to avoid propagating "queries of death"
     # to all frontends)
-    proxy_next_upstream error;
+    proxy_next_upstream error http_502;
 
     #Must read the body in 5 seconds.
     client_body_timeout 5;
