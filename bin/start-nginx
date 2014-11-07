@@ -6,9 +6,7 @@ mkfifo $psmgr
 
 #Evaluate config to get $PORT
 erb config/nginx.conf.erb > config/nginx.conf
-erb app/supervisord.conf.erb > app/supervisord.conf
-
-pip install supervisor
+erb config/supervisord.conf.erb > app/supervisord.conf
 
 n=1
 while getopts :f option ${@:1:2}
@@ -21,11 +19,7 @@ done
 
 #Start App Server
 (
-	#Take the command passed to this bin and start it.
-	#E.g. bin/start-nginx bundle exec unicorn -c config/unicorn.rb
-        COMMAND=${@:$n}
-	echo "buildpack=nginx at=start-app cmd=$COMMAND"
-	$COMMAND
+	supervisord
 	echo 'app' >$psmgr
 ) &
 
@@ -42,15 +36,6 @@ then
 	done
 	echo 'buildpack=nginx at=app-initialized'
 fi
-
-#Start NGINX
-(
-	#We expect nginx to run in foreground.
-	#We also expect a socket to be at /tmp/nginx.socket.
-	echo 'buildpack=nginx at=nginx-start'
-	supervisord
-	echo 'nginx' >$psmgr
-) &
 
 #This read will block the process waiting on a msg to be put into the fifo.
 #If any of the processes defined above should exit,
