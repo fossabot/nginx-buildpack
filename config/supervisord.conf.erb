@@ -9,16 +9,16 @@ nodaemon=true                ; (start in foreground if true;default false)
 command=bin/nginx -p . -c config/nginx.conf
 redirect_stderr=true
 autorestart=true
-stdout_logfile=/dev/stdout
-stderr_logfile=/dev/stdout
+stdout_logfile=logs/access.log
+stderr_logfile=logs/error.log
 priority=1
 
 [program:web]
 command=python -m app.web 888%(process_num)d
 process_name=%(program_name)s_%(process_num)d
 redirect_stderr=true 
-stdout_logfile=/dev/stdout
-stderr_logfile=/dev/stdout
+stdout_logfile=logs/access.log
+stderr_logfile=logs/error.log
 autorestart=true
 numprocs=<%= ENV['TORNADO_PROCESSES'] || 4 %>
 ;numprocs_start=100
