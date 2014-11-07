@@ -1,6 +1,6 @@
 daemon off;
 #Heroku dynos have at least 4 cores.
-worker_processes <%= ENV['NGINX_WORKERS'] || 4 %>;
+worker_processes <%= ENV['NGINX_WORKERS'] || 2 %>;
 
 events {
     use epoll;
@@ -14,7 +14,7 @@ http {
     gzip_min_length 512;
 
     upstream frontends{
-        <% for x in 0..(ENV['TORNADO_PROCESSES'] || 4).to_i %>
+        <% for x in 0..(ENV['TORNADO_PROCESSES'] || 3).to_i %>
             server localhost:888<%= x %>;
         <% end %>
     }

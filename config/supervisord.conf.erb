@@ -19,6 +19,6 @@ redirect_stderr=true
 stdout_logfile=logs/access.log
 stderr_logfile=logs/error.log
 autorestart=true
-numprocs=<%= ENV['TORNADO_PROCESSES'] || 4 %>
+numprocs=<%= ENV['TORNADO_PROCESSES'] || 3 %>
 ;numprocs_start=100
 priority=1
