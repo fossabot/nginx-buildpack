@@ -17,13 +17,14 @@ do
         esac
 done
 
+#Initialize log directory.
+mkdir -p logs
+touch logs/access.log logs/error.log
+echo 'buildpack=nginx at=logs-initialized'
+
 #Start log redirection.
 (
-	#Initialize log directory.
-	mkdir -p logs
-	touch logs/access.log logs/error.log
 	#Redirect NGINX logs to stdout.
-	echo 'buildpack=nginx at=logs-initialized'
 	tail -qF -n 0 logs/*.log
 	echo 'logs' >$psmgr
 ) &
