@@ -6,7 +6,8 @@ mkfifo $psmgr
 
 #Evaluate config to get $PORT
 erb config/nginx.conf.erb > config/nginx.conf
-erb config/supervisord.conf.erb > supervisord.conf
+erb config/web.supervisord.conf.erb > config/web.supervisord.conf
+erb config/worker.supervisord.conf.erb > config/worker.supervisord.conf
 
 n=1
 while getopts :f option ${@:1:2}
@@ -20,7 +21,7 @@ done
 #Initialize log directory.
 mkdir -p logs
 touch logs/access.log logs/error.log
-echo 'buildpack=nginx at=logs-initialized'
+echo 'buildpack=supervisord at=logs-initialized'
 
 #Start log redirection.
 (
@@ -31,11 +32,11 @@ echo 'buildpack=nginx at=logs-initialized'
 
 #Start App Server
 (
-	supervisord
+	supervisord -c config/$1.supervisord.conf
 	echo 'app' >$psmgr
 ) &
 
-if [[ -z "$FORCE" ]]
+if [[ -z "$FORCE" ] && [ $1 == "web" ]]
 then
 	FILE="/tmp/app-initialized"
 
@@ -43,10 +44,10 @@ then
 	#are app is ready for traffic.
 	while [[ ! -f "$FILE" ]]
 	do
-		echo 'buildpack=nginx at=app-initialization'
+		echo 'buildpack=supervisord at=app-initialization'
 		sleep 1
 	done
-	echo 'buildpack=nginx at=app-initialized'
+	echo 'buildpack=supervisord at=app-initialized'
 fi
 
 #This read will block the process waiting on a msg to be put into the fifo.
@@ -56,5 +57,5 @@ fi
 #will use it's process name as a msg so that we can print the offending
 #process to stdout.
 read exit_process <$psmgr
-echo "buildpack=nginx at=exit process=$exit_process"
+echo "buildpack=supervisord at=exit process=$exit_process"
 exit 1

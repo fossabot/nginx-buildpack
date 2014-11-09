@@ -6,8 +6,8 @@ mkdir -p "$1/bin/"
 cp "bin/nginx-$STACK" "$1/bin/nginx"
 nginx_version=$(./bin/nginx-$STACK -V 2>&1 | head -1 | awk '{ print $NF }')
 echo "-----> nginx-buildpack: Installed ${nginx_version} to app/bin"
-cp bin/start-nginx "$1/bin/"
-echo '-----> nginx-buildpack: Added start-nginx to app/bin'
+cp bin/run "$1/bin/"
+echo '-----> nginx-buildpack: Added run to app/bin'
 
 mkdir -p "$1/config"
 
@@ -21,10 +21,16 @@ else
     echo '-----> nginx-buildpack: Custom nginx config found in app/config.'
 fi
 
-if [[ ! -f $1/config/supervisord.conf.erb ]]; then
-	cp config/supervisord.conf.erb "$1/config/"
-	echo '-----> nginx-buildpack: Default supervisord config copied to app/config.'
+if [[ ! -f $1/config/web.supervisord.conf.erb ]]; then
+    cp config/web.supervisord.conf.erb "$1/config/"
+    echo '-----> nginx-buildpack: Default web.supervisord config copied to app/config.'
 else
-	echo '-----> nginx-buildpack: Custom supervisord config found in app/config.'
+    echo '-----> nginx-buildpack: Custom web.supervisord config found in app/config.'
+fi
+if [[ ! -f $1/config/worker.supervisord.conf.erb ]]; then
+	cp config/worker.supervisord.conf.erb "$1/config/"
+	echo '-----> nginx-buildpack: Default worker.supervisord config copied to app/config.'
+else
+	echo '-----> nginx-buildpack: Custom worker.supervisord config found in app/config.'
 fi
 exit 0
