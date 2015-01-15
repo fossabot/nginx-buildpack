@@ -14,7 +14,7 @@ http {
     gzip_min_length 512;
 
     upstream frontends{
-        <% for x in 0..(ENV['WEB_PROCESSES'] || 3).to_i %>
+        <% for x in 0..((ENV['WEB_PROCESSES'] || 3).to_i - 1) %>
             server localhost:888<%= x %>;
         <% end %>
     }
