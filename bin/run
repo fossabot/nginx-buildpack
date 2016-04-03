@@ -30,7 +30,7 @@ echo 'buildpack=supervisord at=logs-initialized'
 
 #Start log redirection.
 (
-	tail -qF -n 0 logs/*.log
+	tail -qF -n 0 logs/$1/*.log
 	echo 'logs' >$psmgr
 ) &
 
