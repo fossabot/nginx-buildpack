@@ -19,21 +19,19 @@ do
 done
 
 #Initialize log directory.
-mkdir -p logs
-touch logs/access.log logs/error.log
+mkdir -p logs/$1
 echo 'buildpack=supervisord at=logs-initialized'
-
-#Start log redirection.
-(
-	#Redirect NGINX logs to stdout.
-	tail -qF -n 0 logs/*.log
-	echo 'logs' >$psmgr
-) &
 
 #Start App Server
 (
 	supervisord -c config/$1.supervisord.conf
 	echo 'app' >$psmgr
+) &
+
+#Start log redirection.
+(
+	tail -qF -n 0 logs/*.log
+	echo 'logs' >$psmgr
 ) &
 
 if [[ -z "$FORCE" ]] && [ $1 == "web" ]
