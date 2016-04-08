@@ -18,20 +18,10 @@ do
         esac
 done
 
-#Initialize log directory.
-mkdir -p logs/$1
-echo 'buildpack=supervisord at=logs-initialized'
-
 #Start App Server
 (
 	supervisord -c config/$1.supervisord.conf
 	echo 'app' >$psmgr
-) &
-
-#Start log redirection.
-(
-	sleep 4 && tail -qF -n 0 logs/$1/*.log
-	echo 'logs' >$psmgr
 ) &
 
 if [[ -z "$FORCE" ]] && [ $1 == "web" ]
