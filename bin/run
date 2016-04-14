@@ -9,6 +9,8 @@ erb config/nginx.conf.erb > config/nginx.conf
 erb config/web.supervisord.conf.erb > config/web.supervisord.conf
 erb config/worker.supervisord.conf.erb > config/worker.supervisord.conf
 
+mkdir logs
+
 n=1
 while getopts :f option ${@:1:2}
 do
@@ -33,6 +35,7 @@ then
 	while [[ ! -f "$FILE" ]]
 	do
 		echo 'buildpack=supervisord at=app-initialization'
+		ls -al logs/
 		sleep 1
 	done
 	echo 'buildpack=supervisord at=app-initialized'
