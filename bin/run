@@ -47,6 +47,5 @@ fi
 #will use it's process name as a msg so that we can print the offending
 #process to stdout.
 read exit_process <$psmgr
-ls -al logs/
 echo "buildpack=supervisord at=exit process=$exit_process"
 exit 1
